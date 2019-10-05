@@ -1,8 +1,9 @@
 {
   "name": "@advanced-rest-client/pouchdb-mapreduce-no-ddocs",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "PouchDB's map/reduce query API as a plugin.",
   "main": "./index.js",
+  "module": "./main.js",
   "keywords": [],
   "author": "Dale Harvey <dale@arandomurl.com>",
   "license": "Apache-2.0",
