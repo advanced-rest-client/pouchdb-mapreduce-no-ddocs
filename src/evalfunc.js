@@ -1,15 +1,15 @@
 import scopedEval from 'scope-eval';
-
+/* eslint-disable require-jsdoc */
 function evalfunc(func, emit, sum, log, isArray, toJSON) {
   return scopedEval(
-    "return (" + func.replace(/;\s*$/, "") + ");",
-    {
-      emit: emit,
-      sum: sum,
-      log: log,
-      isArray: isArray,
-      toJSON: toJSON
-    }
+      '(' + func.replace(/;\s*$/, '') + ');',
+      {
+        emit: emit,
+        sum: sum,
+        log: log,
+        isArray: isArray,
+        toJSON: toJSON,
+      }
   );
 }
 

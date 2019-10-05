@@ -1,19 +1,24 @@
 import { upsert } from 'pouchdb-utils';
 import { stringMd5 } from 'pouchdb-md5';
-
+/* eslint-disable require-jsdoc */
+/**
+ * @param {Object} opts
+ * @return {Promise}
+ */
 function createView(opts) {
-  var sourceDB = opts.db;
-  var viewName = opts.viewName;
-  var mapFun = opts.map;
-  var reduceFun = opts.reduce;
-  var temporary = opts.temporary;
-  var saveAs = opts.saveAs;
+  const sourceDB = opts.db;
+  const viewName = opts.viewName;
+  const mapFun = opts.map;
+  const reduceFun = opts.reduce;
+  const temporary = opts.temporary;
+  const saveAs = opts.saveAs;
 
   // the "undefined" part is for backwards compatibility
-  var viewSignature = mapFun.toString() + (reduceFun && reduceFun.toString()) +
+  const viewSignature = mapFun.toString() +
+    (reduceFun && reduceFun.toString()) +
     'undefined' + (saveAs || '');
 
-  var cachedViews;
+  let cachedViews;
   if (!temporary) {
     // cache this to ensure we don't try to update the same view twice
     cachedViews = sourceDB._cachedViews = sourceDB._cachedViews || {};
@@ -22,9 +27,8 @@ function createView(opts) {
     }
   }
 
-  var promiseForView = sourceDB.info().then(function (info) {
-
-    var depDbName = info.db_name + '-';
+  const promiseForView = sourceDB.info().then(function(info) {
+    let depDbName = info.db_name + '-';
     if (saveAs) {
       depDbName += saveAs;
     } else {
@@ -32,15 +36,16 @@ function createView(opts) {
     }
 
     function registerMrView() {
-      // save the view name in the source db so it can be cleaned up if necessary
+      // save the view name in the source db so it can be
+      // cleaned up if necessary
       // (e.g. when the _design doc is deleted, remove all associated view data)
       function diffFunction(doc) {
         doc.views = doc.views || {};
-        var fullViewName = viewName;
+        let fullViewName = viewName;
         if (fullViewName.indexOf('/') === -1) {
           fullViewName = viewName + '/' + viewName;
         }
-        var depDbs = doc.views[fullViewName] = doc.views[fullViewName] || {};
+        const depDbs = doc.views[fullViewName] = doc.views[fullViewName] || {};
         /* istanbul ignore if */
         if (depDbs[depDbName]) {
           return; // no update necessary
@@ -53,26 +58,26 @@ function createView(opts) {
     }
 
     function registerDependentDb() {
-      return sourceDB.registerDependentDatabase(depDbName).then(function (res) {
-        var db = res.db;
+      return sourceDB.registerDependentDatabase(depDbName).then(function(res) {
+        const db = res.db;
         db.auto_compaction = true;
-        var view = {
+        const view = {
           name: depDbName,
           db: db,
           sourceDB: sourceDB,
           adapter: sourceDB.adapter,
           mapFun: mapFun,
-          reduceFun: reduceFun
+          reduceFun: reduceFun,
         };
-        return view.db.get('_local/lastSeq').catch(function (err) {
+        return view.db.get('_local/lastSeq').catch(function(err) {
           /* istanbul ignore if */
           if (err.status !== 404) {
             throw err;
           }
-        }).then(function (lastSeqDoc) {
+        }).then(function(lastSeqDoc) {
           view.seq = lastSeqDoc ? lastSeqDoc.seq : 0;
           if (cachedViews) {
-            view.db.once('destroyed', function () {
+            view.db.once('destroyed', function() {
               delete cachedViews[viewSignature];
             });
           }

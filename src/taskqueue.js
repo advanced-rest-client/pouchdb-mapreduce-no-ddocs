@@ -4,19 +4,19 @@
  */
 
 import Promise from 'pouchdb-promise';
-
+/* eslint-disable require-jsdoc */
 function TaskQueue() {
-  this.promise = new Promise(function (fulfill) {fulfill(); });
+  this.promise = new Promise(function(fulfill) {fulfill();});
 }
-TaskQueue.prototype.add = function (promiseFactory) {
-  this.promise = this.promise.catch(function () {
+TaskQueue.prototype.add = function(promiseFactory) {
+  this.promise = this.promise.catch(function() {
     // just recover
-  }).then(function () {
+  }).then(function() {
     return promiseFactory();
   });
   return this.promise;
 };
-TaskQueue.prototype.finish = function () {
+TaskQueue.prototype.finish = function() {
   return this.promise;
 };
 
